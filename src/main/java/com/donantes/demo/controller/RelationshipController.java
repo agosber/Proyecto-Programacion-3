@@ -1,11 +1,13 @@
 package com.donantes.demo.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.donantes.demo.repository.RelationshipRepository;
+import com.donantes.demo.service.RelationshipService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,22 +16,28 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RelationshipController {
 
-    private final RelationshipRepository relationshipRepository;
+  
+    private final RelationshipService relationshipService;
 
     @PostMapping("/compatible")
-    public String createCompatibilities(@RequestParam String donanteId,
-                                      @RequestParam String pacienteId) {
-        relationshipRepository.createCompatibility(donanteId, pacienteId);
-        return "Relación COMPATIBLE_CON creada entre Donante " + donanteId + " y Paciente " + pacienteId;
+    public ResponseEntity<String> createCompatibility(
+            @RequestParam String donorId,
+            @RequestParam String patientId) {
+
+        relationshipService.createCompatibility(donorId, patientId);
+        return ResponseEntity.status(201)
+                .body("Relación COMPATIBLE_CON creada entre Donante " + donorId + " y Paciente " + patientId);
     }
 
     @PostMapping("/located")
-    public String assignHospitals(@RequestParam String personaId,
-                                  @RequestParam String hospitalId) {
-        relationshipRepository.assignHospital(personaId, hospitalId);
-        return "Persona " + personaId + " ubicada en Hospital " + hospitalId;
-    }
+    public ResponseEntity<String> assignHospital(
+            @RequestParam String personaId,
+            @RequestParam String hospitalId) {
 
+        relationshipService.assignHospital(personaId, hospitalId);
+        return ResponseEntity.status(201)
+                .body("Persona " + personaId + " ubicada en Hospital " + hospitalId);
+    }
 
     
 

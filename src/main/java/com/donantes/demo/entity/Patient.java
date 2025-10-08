@@ -6,6 +6,9 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.Data;
 
 @Data
@@ -23,6 +26,7 @@ public class Patient {
     private double lon;
 
     // Relación inversa: Paciente compatible con Donante
+    @JsonIgnore
     @Relationship(type = "COMPATIBLE_CON", direction = Relationship.Direction.INCOMING)
     private List<Donor> donantes;
     

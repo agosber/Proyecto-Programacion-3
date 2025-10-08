@@ -6,6 +6,8 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 @Data
@@ -21,12 +23,15 @@ public class Hospital {
     private int capacidad;
 
     // Donantes y pacientes en el hospital
+    @JsonIgnore
     @Relationship(type = "UBICADO_EN", direction = Relationship.Direction.INCOMING)
     private List<Donor> donantes;
 
+    @JsonIgnore
     @Relationship(type = "UBICADO_EN", direction = Relationship.Direction.INCOMING)
     private List<Patient> pacientes;
 
+    
     // Conexiones a otros hospitales (para rutas Dijkstra)
     @Relationship(type = "CONEXION")
     private List<Hospital> conexiones;

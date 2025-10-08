@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,23 +28,33 @@ public class DonorController {
 
     private final DonorService donorService;
 
-    @PostMapping
-    public Donor createDonante(@RequestBody Donor donor) {
-        return donorService.save(donor);
+     @PostMapping
+    public ResponseEntity<Donor> createDonor(@RequestBody Donor donor) {
+        try {
+            Donor savedDonor = donorService.save(donor);
+            return ResponseEntity.status(201).body(savedDonor);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping
-    public List<Donor> listDonors(){
-        return donorService.list();
+    public ResponseEntity<List<Donor>> listDonors() {
+        List<Donor> donors = donorService.list();
+        return ResponseEntity.ok(donors);
     }
 
     @GetMapping("/{id}")
-    public Donor getDonorById(@PathVariable String id){
-        return donorService.getById(id).orElse(null);
+    public ResponseEntity<Donor> getDonorById(@PathVariable String id) {
+        return donorService.getById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
     @DeleteMapping("/{id}")
-    public void deleteDonor(@PathVariable String id){
+    public ResponseEntity<Void> deleteDonor(@PathVariable String id) {
         donorService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
