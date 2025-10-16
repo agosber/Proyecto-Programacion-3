@@ -20,24 +20,26 @@ public class PriorityService {
     private final CompatibilityService compatibilityService;
     private final Neo4jClient neo4jClient;
 
-    /**
-     * Asigna donantes a pacientes según prioridad usando MergeSort + greedy.
-     */
+//Algoritmos combinados:
+     //1. MergeSort → Divide y vencerás: ordena los pacientes por prioridad (1 = mayor prioridad).
+     //2. BFS → usado desde CompatibilityService para obtener donantes compatibles.
+     // 3. Greedy → selecciona el primer donante disponible para cada paciente.
+
     @Transactional
     public List<Map<String, Object>> assignDonorsToPatients() {
-        // 1️⃣ Obtener todos los pacientes
+        // Obtener todos los pacientes
         List<Patient> pacientes = patientRepository.findAll();
 
-        // 2️⃣ Ordenar pacientes por prioridad usando MergeSort (1 = mayor prioridad)
+        // Ordenar pacientes por prioridad usando MergeSort (1 = mayor prioridad)
         pacientes = mergeSortByPriority(pacientes);
 
         List<Map<String, Object>> resultados = new ArrayList<>();
 
         for (Patient paciente : pacientes) {
-            // 3️⃣ Obtener donantes compatibles usando BFS
+            // Obtener donantes compatibles usando BFS
             List<Donor> compatibles = compatibilityService.findCompatibleDonorsBFS(paciente.getId());
 
-            // 4️⃣ Algoritmo greedy: tomar el primer donante disponible
+            // Algoritmo greedy: tomar el primer donante disponible
             Optional<Donor> donanteAsignado = compatibles.stream()
                     .filter(Donor::isDisponibilidad)
                     .findFirst();
@@ -75,7 +77,7 @@ public class PriorityService {
         return resultados;
     }
 
-    // ================= MergeSort =================
+    //  MergeSort
 
     private List<Patient> mergeSortByPriority(List<Patient> pacientes) {
         if (pacientes.size() <= 1) return pacientes;

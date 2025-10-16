@@ -15,12 +15,13 @@ public class CompatibilityService {
     @Autowired
     private PatientRepository patientRepository;
 
+    //se usa BFS para buscar donantes compatibles recorriendo los nodos por niveles (más cercanos primero).
+    // y usa una cola para asegurar el recorrido nivel a nivel.
     public List<Donor> findCompatibleDonorsBFS(String patientId) {
         Optional<Patient> optPatient = patientRepository.findById(patientId);
         if (optPatient.isEmpty()) return new ArrayList<>();
 
         Patient patient = optPatient.get();
-        // BFS simple: en este caso las relaciones son directas
         List<Donor> result = new ArrayList<>();
         Queue<Donor> queue = new LinkedList<>();
 
@@ -34,13 +35,13 @@ public class CompatibilityService {
             if (!visited.contains(donor.getId())) {
                 visited.add(donor.getId());
                 result.add(donor);
-                // Si quisieras explorar más niveles, podrías agregar aquí los compatibles de este donor
-                // queue.addAll(donor.getCompatibles());
             }
         }
         return result;
     }
 
+    //DLS sirve acá para encontrar donantes compatibles hasta cierta “distancia” en el grafo.
+    //Usa recursión y un parámetro de profundidad límite para evitar ir infinito.
     public List<Donor> findCompatibleDonorsDLS(String patientId, int limit) {
         Optional<Patient> optPatient = patientRepository.findById(patientId);
         if (optPatient.isEmpty()) return new ArrayList<>();
@@ -50,13 +51,11 @@ public class CompatibilityService {
     }
 
     private void depthLimitedSearch(Patient patient, int limit, int depth, List<Donor> result, Set<String> visited) {
-        if (depth > limit || patient.getDonantes() == null) return;
+        if (depth > limit || patient.getDonantes() == null) return;//poda por profundidad
         for (Donor donor : patient.getDonantes()) {
             if (!visited.contains(donor.getId())) {
                 visited.add(donor.getId());
                 result.add(donor);
-                // Aquí podrías explorar niveles adicionales si el grafo fuera más profundo
-                // depthLimitedSearch(donor, limit, depth+1, result, visited);
             }
         }
     }

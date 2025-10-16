@@ -10,16 +10,18 @@ import java.util.stream.Collectors;
 @Service
 public class DijkstraService {
 
+//Encuentra la ruta más corta entre dos hospitales en un grafo ponderado usando el algoritmo de Dijkstra.
+//Usa una cola de prioridad para elegir el nodo con menor distancia acumulada
+
+//Poda: cuando se extrae el nodo destino del heap, se detiene el algoritmo,
+//evitando explorar caminos más largos (optimización natural del propio Dijkstra).
+
     private final Neo4jClient neo4jClient;
 
     public DijkstraService(Neo4jClient neo4jClient) {
         this.neo4jClient = neo4jClient;
     }
 
-    /**
-     * Ejecuta Dijkstra entre dos hospitales usando los datos de Neo4j.
-     * Devuelve un mapa con la ruta y la distancia total.
-     */
     public Map<String, Object> shortestPath(String fromHospitalId, String toHospitalId) {
         // Obtener todas las conexiones entre hospitales
         String query = """
@@ -81,6 +83,7 @@ public class DijkstraService {
                 Node current = pq.poll();
                 if (current.dist > dist.get(current.id)) continue;
                 if (current.id.equals(target)) break;
+                ////PODA: si ya se alcanzó el destino, se detiene el algoritmo
 
                 for (Edge edge : adj.getOrDefault(current.id, List.of())) {
                     double newDist = current.dist + edge.weight;
