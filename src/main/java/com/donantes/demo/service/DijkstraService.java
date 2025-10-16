@@ -21,7 +21,7 @@ public class DijkstraService {
      * Devuelve un mapa con la ruta y la distancia total.
      */
     public Map<String, Object> shortestPath(String fromHospitalId, String toHospitalId) {
-        // 1️⃣ Obtener todas las conexiones entre hospitales
+        // Obtener todas las conexiones entre hospitales
         String query = """
             MATCH (a:Hospital)-[r:CONEXION]->(b:Hospital)
             RETURN a.id AS from, b.id AS to, r.distancia AS weight
@@ -31,7 +31,7 @@ public class DijkstraService {
                 .fetch()
                 .all();
 
-        // 2️⃣ Construir el grafo en memoria
+        // Construir el grafo en memoria
         Graph graph = new Graph();
         for (Map<String, Object> row : results) {
             String from = (String) row.get("from");
