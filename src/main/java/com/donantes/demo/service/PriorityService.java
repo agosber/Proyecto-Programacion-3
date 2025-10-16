@@ -36,43 +36,44 @@ public class PriorityService {
         List<Map<String, Object>> resultados = new ArrayList<>();
 
         for (Patient paciente : pacientes) {
-            // Obtener donantes compatibles usando BFS
-            List<Donor> compatibles = compatibilityService.findCompatibleDonorsBFS(paciente.getId());
+    // Obtener donantes compatibles usando DLS (profundidad límite, por ejemplo 3)
+    List<Donor> compatibles = compatibilityService.findCompatibleDonorsDLS(paciente.getId(), 3);
 
-            // Algoritmo greedy: tomar el primer donante disponible
-            Optional<Donor> donanteAsignado = compatibles.stream()
-                    .filter(Donor::isDisponibilidad)
-                    .findFirst();
+    // Algoritmo greedy: tomar el primer donante disponible
+    Optional<Donor> donanteAsignado = compatibles.stream()
+            .filter(Donor::isDisponibilidad)
+            .findFirst();
 
-            Map<String, Object> info = new HashMap<>();
-            info.put("paciente", paciente.getNombre());
-            info.put("prioridad", paciente.getPrioridad());
+    Map<String, Object> info = new HashMap<>();
+    info.put("paciente", paciente.getNombre());
+    info.put("prioridad", paciente.getPrioridad());
 
-            if (donanteAsignado.isPresent()) {
-                Donor donante = donanteAsignado.get();
+    if (donanteAsignado.isPresent()) {
+        Donor donante = donanteAsignado.get();
 
-                // Crear relación ASIGNADO_A en Neo4j y marcar como no disponible
-                String query = """
-                    MATCH (d:Donante {id: $donorId}), (p:Paciente {id: $patientId})
-                    MERGE (d)-[:ASIGNADO_A]->(p)
-                    SET d.disponibilidad = false
-                """;
-                neo4jClient.query(query)
-                        .bind(donante.getId()).to("donorId")
-                        .bind(paciente.getId()).to("patientId")
-                        .run();
+        // Crear relación ASIGNADO_A en Neo4j y marcar como no disponible
+        String query = """
+            MATCH (d:Donante {id: $donorId}), (p:Paciente {id: $patientId})
+            MERGE (d)-[:ASIGNADO_A]->(p)
+            SET d.disponibilidad = false
+        """;
+        neo4jClient.query(query)
+                .bind(donante.getId()).to("donorId")
+                .bind(paciente.getId()).to("patientId")
+                .run();
 
-                // Actualizar disponibilidad en memoria y repositorio
-                donante.setDisponibilidad(false);
-                donorRepository.save(donante);
+        // Actualizar disponibilidad en memoria y repositorio
+        donante.setDisponibilidad(false);
+        donorRepository.save(donante);
 
-                info.put("donante_asignado", donante.getNombre());
-            } else {
-                info.put("donante_asignado", "Ninguno disponible");
-            }
+        info.put("donante_asignado", donante.getNombre());
+    } else {
+        info.put("donante_asignado", "Ninguno disponible");
+    }
 
-            resultados.add(info);
-        }
+    resultados.add(info);
+}
+
 
         return resultados;
     }

@@ -19,11 +19,6 @@ public class CompatibilityController {
 
     private final CompatibilityService compatibilityService;
 
-    @GetMapping("/bfs")
-    public List<Donor> getCompatibleDonorsBFS(@RequestParam String patientId) {
-        return compatibilityService.findCompatibleDonorsBFS(patientId);
-    }
-
     @GetMapping("/dls")
     public List<Donor> getCompatibleDonorsDLS(@RequestParam String patientId,
                                                @RequestParam int limit) {
