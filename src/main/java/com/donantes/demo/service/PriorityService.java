@@ -22,7 +22,7 @@ public class PriorityService {
 
 //Algoritmos combinados:
      //1. MergeSort → Divide y vencerás: ordena los pacientes por prioridad (1 = mayor prioridad).
-     //2. BFS → usado desde CompatibilityService para obtener donantes compatibles.
+     //2. DLS → usado desde CompatibilityService para obtener donantes compatibles.
      // 3. Greedy → selecciona el primer donante disponible para cada paciente.
 
     @Transactional
