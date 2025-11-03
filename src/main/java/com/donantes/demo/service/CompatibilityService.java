@@ -15,7 +15,7 @@ public class CompatibilityService {
     @Autowired
     private PatientRepository patientRepository;
 
-    // DLS: encuentra donantes compatibles hasta cierta profundidad, solo si están disponibles
+    // DFS --> mas especificamente DLS: encuentra donantes compatibles hasta cierta profundidad, solo si están disponibles
     public List<Donor> findCompatibleDonorsDLS(String patientId, int limit) {
         Optional<Patient> optPatient = patientRepository.findById(patientId);
         if (optPatient.isEmpty()) return new ArrayList<>();
