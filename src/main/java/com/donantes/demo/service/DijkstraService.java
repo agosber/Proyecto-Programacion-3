@@ -52,10 +52,10 @@ public class DijkstraService {
         }
 
         return Map.of(
-                "from", fromHospitalId,
-                "to", toHospitalId,
-                "distance", result.getCost(),
-                "path", result.getPath()
+                "desde", fromHospitalId,
+                "hasta", toHospitalId,
+                "distancia", result.getCost(),
+                "camino", result.getPath()
         );
     }
 
